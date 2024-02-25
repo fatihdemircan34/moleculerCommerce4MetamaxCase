@@ -12,7 +12,7 @@ Installation
 Clone the repository:
 
 ```
-git clone https://yourproject.git 
+git clone https://github.com/fatihdemircan34/moleculerCommerce4MetamaxCase.git
 
 ```
 Use code with caution.
