@@ -43,16 +43,50 @@ GET /api/products:  Lists all products along with brand information. 📦
 
 POST /api/products: Creates a new product. 🆕
 **<h4>Checkout<h4>**
-api/checkout": Simulates a product purchase process. 🛒
+POST api/checkout": Simulates a product purchase process. 🛒
+
+# ER Diagram
+![img_2.png](img_2.png)
 
 
+# 📝 Testing 
+ 
+![2024-02-25 14-12-14.gif](2024-02-25%2014-12-14.gif)
 
+```{
+  "client": {
+    "name": "Ahmet Yılmaz",
+    "email": "ahmet@example.com",
+    "id":1
+  },
+ 
+  "clientAddress": "1234 Sokak No:56, 34000 İstanbul, Türkiye",
+  "totalProductValue": 1500,
+  "totalShippingValue": 50,
+  "products": [
+    {
+      "productId": 1,
+      "quantity": 2,
+      "price": 500
+    },
+    {
+      "productId": 2,
+      "quantity": 1,
+      "price": 500
+    }
+  ]
+}
+```
 
 # 🛠️ Built With
 Node.js
 Moleculer
 Prisma
 SQLite (As the database)
+
+
+
+
 
 
 
