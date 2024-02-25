@@ -1,0 +1,145 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ürün Listesi</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Örnek ürün listesi; gerçekte bu verileri bir API'den alabilirsiniz
+			const products = fetch('/api/products')
+				.then(response => response.json())
+				.then(data => {
+					const tableBody = document.getElementById('productTableBody');
+					data.forEach((product, index) => {
+						const row = `<tr>
+                                        <th scope="row">${index + 1}</th>
+                                        <td>${product.name}</td>
+                                        <td>${product.price}</td>
+                                        <td>${product.brand.name}</td>
+                                         <td><button class="btn btn-primary" onclick="openCheckoutModal(${product.id}, '${product.name}', ${product.price})">Satın Al</button></td>
+                                    </tr>`;
+						tableBody.innerHTML += row;
+					});
+				})
+				.catch(error => console.error('Hata:', error));
+
+		});
+
+		function openCheckoutModal(productId, productName, productPrice) {
+			// Modal içindeki form alanlarını doldur
+			document.getElementById("productId").value = productId;
+			document.getElementById("productName").value = productName;
+			document.getElementById("productPrice").value = productPrice;
+
+			// Modalı göster
+			$('#checkoutModal').modal('show');
+		}
+
+		function submitOrder() {
+			const clientName = document.getElementById("clientName").value;
+			const clientEmail = document.getElementById("clientEmail").value;
+			const clientAddress = document.getElementById("clientAddress").value;
+			const productId = document.getElementById("productId").value;
+			const productPrice = document.getElementById("productPrice").value;
+
+			const orderData = {
+				client: {
+					name: clientName,
+					email: clientEmail,
+					id: 1 // Örnek olarak 1 kullanıldı, gerçek uygulamada müşteri ID'si dinamik olmalı
+				},
+				clientAddress: clientAddress,
+				totalProductValue: parseFloat(productPrice),
+				totalShippingValue: 50, // Örnek kargo ücreti
+				products: [
+					{ productId: parseInt(productId), quantity: 1, price: parseFloat(productPrice) }
+				]
+			};
+
+			fetch("/api/checkout", { // API endpoint'inize uygun URL kullanın
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(orderData)
+			})
+				.then(response => response.json())
+				.then(data => {
+					alert("Sipariş başarıyla oluşturuldu!");
+					$('#checkoutModal').modal('hide');
+				})
+				.catch(error => {
+					console.error("Sipariş oluşturulurken bir hata oluştu", error);
+					alert("Sipariş oluşturulamadı.");
+				});
+		}
+	</script>
+
+</head>
+<body>
+<div class="container mt-5">
+	<h2>Ürün Listesi</h2>
+	<table class="table">
+		<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Ürün Adı</th>
+			<th scope="col">Fiyat</th>
+			<th scope="col">Marka</th>
+			<th scope="col">İşlem</th>
+		</tr>
+		</thead>
+		<tbody id="productTableBody">
+		</tbody>
+	</table>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="checkoutModalLabel">Sipariş Bilgileri</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="orderForm">
+					<div class="form-group">
+						<label for="clientName">Ad Soyad</label>
+						<input type="text" class="form-control" id="clientName" required>
+					</div>
+					<div class="form-group">
+						<label for="clientEmail">E-posta</label>
+						<input type="email" class="form-control" id="clientEmail" required>
+					</div>
+					<div class="form-group">
+						<label for="clientAddress">Adres</label>
+						<input type="text" class="form-control" id="clientAddress" required>
+					</div>
+					<input type="hidden" id="productId">
+					<input type="hidden" id="productName">
+					<input type="hidden" id="productPrice">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+				<button type="button" class="btn btn-primary" onclick="submitOrder()">Siparişi Onayla</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+	// Ürünleri ve SATIN AL butonlarını sayfaya ekleyen ve modalı ayarlayan JavaScript kodları burada yer alacak
+</script>
+</body>
+</html>
