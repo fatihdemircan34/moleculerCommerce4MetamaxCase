@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
@@ -33,9 +33,20 @@ async function main() {
 		data: { name: "Ürün 4", price: 499.99, brandId: marka2.id },
 	});
 
-	console.log("Başlangıç verileri başarıyla eklendi.");
-}
 
+	const client = await prisma.client.create({
+		data: {
+			name: "Ahmet Yılmaz",
+			email: "ahmet@example.com",
+		}
+	});
+
+
+
+
+	console.log("Başlangıç verileri başarıyla eklendi.");
+
+}
 main()
 	.catch(e => {
 		console.error(e);
