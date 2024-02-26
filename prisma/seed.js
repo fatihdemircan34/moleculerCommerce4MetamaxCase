@@ -38,7 +38,7 @@ async function main() {
 		data: {
 			name: "Ahmet Yılmaz",
 			email: "ahmet@example.com",
-			password: "sifre123" // Şifre alanını ekleyerek güncelledik
+			password: "password123" // Şifre alanını ekleyerek güncelledik
 		}
 	});
 
