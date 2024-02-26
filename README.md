@@ -46,7 +46,7 @@ POST /api/products: Creates a new product. 🆕
 POST api/checkout": Simulates a product purchase process. 🛒
 
 # ER Diagram
-![img_2.png](img_2.png)
+![img_3.png](img_3.png)![img_1.png](img_1.png)
 
 
 # 📝 Testing 

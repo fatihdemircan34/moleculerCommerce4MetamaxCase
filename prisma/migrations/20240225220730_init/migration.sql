@@ -1,26 +1,18 @@
 -- CreateTable
-CREATE TABLE "Brand" (
+CREATE TABLE "Client" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
-    "description" TEXT
-);
-
--- CreateTable
-CREATE TABLE "Product" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "name" TEXT NOT NULL,
-    "price" REAL NOT NULL,
-    "brandId" INTEGER NOT NULL,
-    CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "Order" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "clientAddress" TEXT NOT NULL,
     "totalProductValue" REAL NOT NULL,
     "totalShippingValue" REAL NOT NULL,
-    "clientName" TEXT NOT NULL,
-    "clientAddress" TEXT NOT NULL,
     "clientId" INTEGER NOT NULL,
     CONSTRAINT "Order_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -37,17 +29,20 @@ CREATE TABLE "OrderItem" (
 );
 
 -- CreateTable
-CREATE TABLE "Client" (
+CREATE TABLE "Product" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL
+    "price" REAL NOT NULL,
+    "brandId" INTEGER NOT NULL,
+    CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "Brand_name_key" ON "Brand"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
+-- CreateTable
+CREATE TABLE "Brand" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "description" TEXT
+);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Client_email_key" ON "Client"("email");

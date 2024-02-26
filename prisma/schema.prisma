@@ -6,46 +6,47 @@ datasource db {
   provider = "sqlite"
   url      = "file:./prisma/dev.db"
 }
-
-model Brand {
-  id          Int @id @default(autoincrement())
-  name        String @unique
-  description String?
-  products    Product[]
-}
-
-model Product {
-  id         Int @id @default(autoincrement())
-  name       String @unique
-  price      Float
-  brandId    Int
-  brand      Brand @relation(fields: [brandId], references: [id])
-  orderItems OrderItem[]
+model Client {
+	id        Int      @id @default(autoincrement())
+	name      String
+	email     String   @unique
+	password  String
+	orders    Order[]
 }
 
 model Order {
-  id                  Int @id @default(autoincrement())
-  totalProductValue   Float
-  totalShippingValue  Float
-  clientAddress       String
-  clientId            Int
-  client              Client @relation(fields: [clientId], references: [id])
-  orderItems          OrderItem[]
+	id                Int          @id @default(autoincrement())
+	createdAt         DateTime     @default(now())
+	clientAddress     String
+	totalProductValue Float
+	totalShippingValue Float
+	clientId          Int
+	client            Client       @relation(fields: [clientId], references: [id])
+	orderItems        OrderItem[]
 }
 
 model OrderItem {
-  id        Int @id @default(autoincrement())
-  orderId   Int
-  productId Int
-  quantity  Int
-  price     Float
-  order     Order @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+	id        Int     @id @default(autoincrement())
+	orderId   Int
+	productId Int
+	quantity  Int
+	price     Float
+	order     Order   @relation(fields: [orderId], references: [id])
+	product   Product @relation(fields: [productId], references: [id])
 }
 
-model Client {
-  id       Int @id @default(autoincrement())
-  name     String
-  email    String @unique
-  orders   Order[]
+model Product {
+	id       Int          @id @default(autoincrement())
+	name     String
+	price    Float
+	brandId  Int
+	brand    Brand        @relation(fields: [brandId], references: [id])
+	orderItems OrderItem[]
+}
+
+model Brand {
+	id       Int       @id @default(autoincrement())
+	name     String
+	description String?
+	products Product[]
 }

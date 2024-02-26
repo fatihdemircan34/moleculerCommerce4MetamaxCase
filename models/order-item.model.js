@@ -1,19 +1,36 @@
-// orderItem.model.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-class OrderItem {
-	static async createOrderItem(data) {
-		return await prisma.orderItem.create( data );
+class BrandModel {
+	async createBrand(data) {
+		return await prisma.brand.create({ data });
 	}
 
-	static async getOrderItemsByOrderId(orderId) {
-		return await prisma.orderItem.findMany({
-			where: { orderId },
+	async getAllBrands() {
+		return await prisma.brand.findMany();
+	}
+
+	// Markayı güncelleme
+	async updateBrand(id, data) {
+		return await prisma.brand.update({
+			where: { id },
+			data,
 		});
 	}
 
-	// Diğer gerekli işlevler...
+	// Markayı silme
+	async deleteBrand(id) {
+		return await prisma.brand.delete({
+			where: { id },
+		});
+	}
+
+	// ID'ye göre marka sorgulama
+	async getBrandById(id) {
+		return await prisma.brand.findUnique({
+			where: { id },
+		});
+	}
 }
 
-module.exports = OrderItem;
+module.exports = new BrandModel();

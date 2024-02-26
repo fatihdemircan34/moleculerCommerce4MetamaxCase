@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,81 +5,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ürün Listesi</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			// Örnek ürün listesi; gerçekte bu verileri bir API'den alabilirsiniz
-			const products = fetch('/api/products')
-				.then(response => response.json())
-				.then(data => {
-					const tableBody = document.getElementById('productTableBody');
-					data.forEach((product, index) => {
-						const row = `<tr>
-                                        <th scope="row">${index + 1}</th>
-                                        <td>${product.name}</td>
-                                        <td>${product.price}</td>
-                                        <td>${product.brand.name}</td>
-                                         <td><button class="btn btn-primary" onclick="openCheckoutModal(${product.id}, '${product.name}', ${product.price})">Satın Al</button></td>
-                                    </tr>`;
-						tableBody.innerHTML += row;
-					});
-				})
-				.catch(error => console.error('Hata:', error));
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
-		});
 
-		function openCheckoutModal(productId, productName, productPrice) {
-			// Modal içindeki form alanlarını doldur
-			document.getElementById("productId").value = productId;
-			document.getElementById("productName").value = productName;
-			document.getElementById("productPrice").value = productPrice;
 
-			// Modalı göster
-			$('#checkoutModal').modal('show');
-		}
-
-		function submitOrder() {
-			const clientName = document.getElementById("clientName").value;
-			const clientEmail = document.getElementById("clientEmail").value;
-			const clientAddress = document.getElementById("clientAddress").value;
-			const productId = document.getElementById("productId").value;
-			const productPrice = document.getElementById("productPrice").value;
-
-			const orderData = {
-				client: {
-					name: clientName,
-					email: clientEmail,
-					id: 1 // Örnek olarak 1 kullanıldı, gerçek uygulamada müşteri ID'si dinamik olmalı
-				},
-				clientAddress: clientAddress,
-				totalProductValue: parseFloat(productPrice),
-				totalShippingValue: 50, // Örnek kargo ücreti
-				products: [
-					{ productId: parseInt(productId), quantity: 1, price: parseFloat(productPrice) }
-				]
-			};
-
-			fetch("/api/checkout", { // API endpoint'inize uygun URL kullanın
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify(orderData)
-			})
-				.then(response => response.json())
-				.then(data => {
-					alert("Sipariş başarıyla oluşturuldu!");
-					$('#checkoutModal').modal('hide');
-				})
-				.catch(error => {
-					console.error("Sipariş oluşturulurken bir hata oluştu", error);
-					alert("Sipariş oluşturulamadı.");
-				});
-		}
-	</script>
 
 </head>
 <body>
 <div class="container mt-5">
+
 	<h2>Ürün Listesi</h2>
 	<table class="table">
 		<thead>
@@ -95,6 +27,7 @@
 		</tr>
 		</thead>
 		<tbody id="productTableBody">
+		<!-- Ürünler burada listelenecek -->
 		</tbody>
 	</table>
 </div>
@@ -123,23 +56,213 @@
 						<label for="clientAddress">Adres</label>
 						<input type="text" class="form-control" id="clientAddress" required>
 					</div>
+					<div class="form-group">
+						<label for="shippingPrice">Kargo Fiyatı</label>
+						<input type="text" class="form-control" id="shippingPrice" readonly>
+					</div>
 					<input type="hidden" id="productId">
 					<input type="hidden" id="productName">
 					<input type="hidden" id="productPrice">
+					<!-- Kredi Kartı Bilgileri Formu (Demo amaçlı readonly veri ile) -->
+					<div class="form-group">
+						<label for="creditCardNumber">Kredi Kartı Numarası</label>
+						<input type="text" class="form-control" id="creditCardNumber" placeholder="XXXX XXXX XXXX XXXX" value="1234 5678 9012 3456" readonly>
+					</div>
+					<div class="form-group">
+						<label for="creditCardExpiration">Son Kullanma Tarihi</label>
+						<input type="text" class="form-control" id="creditCardExpiration" placeholder="MM/YY" value="12/34" readonly>
+					</div>
+					<div class="form-group">
+						<label for="creditCardCVV">CVV</label>
+						<input type="text" class="form-control" id="creditCardCVV" value="123" readonly>
+					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
-				<button type="button" class="btn btn-primary" onclick="submitOrder()">Siparişi Onayla</button>
+				<button type="button" id="submitOrderBtn" class="btn btn-primary" onclick="submitOrder()">Siparişi Onayla</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="loginModalLabel">Giriş Yap</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<input type="email" id="loginEmail" placeholder="Email">
+				<input type="password" id="loginPassword" placeholder="Şifre">
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="loginBtn" class="btn btn-primary">Giriş Yap</button>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
-	// Ürünleri ve SATIN AL butonlarını sayfaya ekleyen ve modalı ayarlayan JavaScript kodları burada yer alacak
+	$(document).ready(function() {
+		function openLoginModal() {
+			$('#loginModal').modal('show');
+		}
+		function listProducts() {
+			// Token'i localStorage'dan al
+			const token = localStorage.getItem('authToken');
+
+			fetch('/api/products', {
+				headers: {
+					// Token'i Authorization başlığında ekleyin
+					'Authorization': `Bearer ${token}`
+				}
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.json();
+				})
+				.then(data => {
+					const tableBody = $('#productTableBody');
+					tableBody.empty(); // Mevcut içeriği temizle
+
+					data.forEach((product, index) => {
+						const row = `<tr>
+                            <th scope="row">${index + 1}</th>
+                            <td>${product.name}</td>
+                            <td>${product.price} TL</td>
+                            <td>${product.brand.name}</td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openCheckoutModal(${product.id}, '${product.name}', ${product.price})">
+                                    Satın Al
+                                </button>
+                            </td>
+                         </tr>`;
+						tableBody.append(row);
+					});
+				})
+				.catch(error => {
+					console.error('Ürün listeleme sırasında bir hata oluştu:', error);
+					alert('Ürünler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.');
+				});
+		}
+
+
+
+		function login() {
+			const email = $("#loginEmail").val(); // Kullanıcıdan alınan e-posta
+			const password = $("#loginPassword").val(); // Kullanıcıdan alınan parola
+
+			fetch('/api/auth/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					email: email,
+					password: password,
+				}),
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Login failed');
+					}
+					return response.json();
+				})
+				.then(data => {
+					// Başarılı giriş sonrası işlemler
+					console.log('Login successful', data);
+					// Token'i localStorage veya benzeri bir yere saklayın
+					localStorage.setItem('authToken', data.token);
+					// Giriş başarılıysa ürün listesini getir veya kullanıcıyı yönlendir
+					listProducts();
+					$('#loginModal').modal('hide');
+				})
+				.catch(error => {
+					console.error('Login error:', error);
+					alert('Giriş başarısız. Lütfen bilgilerinizi kontrol edin ve tekrar deneyin.');
+				});
+		}
+
+
+		$("#loginBtn").click(function() {
+			login();
+		});
+
+		window.openCheckoutModal = function(productId, productName, productPrice) {
+			$("#productId").val(productId);
+			$("#productName").val(productName);
+			$("#productPrice").val(productPrice);
+
+			// Kargo fiyatını rastgele belirle ve göster
+			let shippingPrice = Math.floor(Math.random() * 16) + 1; // 1 ile 16 arasında rastgele bir değer
+			$("#shippingPrice").val(shippingPrice + ' TL');
+
+			$('#checkoutModal').modal('show');
+		};
+
+		$("#submitOrderBtn").click(function() {
+			submitOrder();
+		});
+
+		function submitOrder() {
+			const clientName = $("#clientName").val();
+			const clientEmail = $("#clientEmail").val();
+			const clientAddress = $("#clientAddress").val();
+			const productId = $("#productId").val();
+			const productPrice = $("#productPrice").val();
+			const shippingPrice = $("#shippingPrice").val().replace(' TL', ''); // ' TL' metnini kaldır
+
+			// Kredi kartı bilgileri (Bu örnekte kullanılmayacak, sadece gösterim amaçlı)
+			const creditCardNumber = $("#creditCardNumber").val();
+			const creditCardExpiration = $("#creditCardExpiration").val();
+			const creditCardCVV = $("#creditCardCVV").val();
+
+			const orderData = {
+				client: { name: clientName, email: clientEmail },
+				clientAddress: clientAddress,
+				totalProductValue: parseFloat(productPrice),
+				totalShippingValue: parseFloat(shippingPrice),
+				products: [{ productId: parseInt(productId), quantity: 1, price: parseFloat(productPrice) }]
+			};
+
+			// Kredi kartı bilgileri ile birlikte sipariş bilgilerini API'ye gönder
+			fetch("/api/checkout", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					// Eğer kullanıcı girişi gerekiyorsa, buraya JWT token ekleyin
+					"Authorization": "Bearer " + localStorage.getItem('authToken')
+				},
+				body: JSON.stringify(orderData)
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Sipariş işlemi başarısız');
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log("Sipariş başarıyla tamamlandı:", data);
+					alert('Siparişiniz başarıyla alındı!');
+					$('#checkoutModal').modal('hide');
+					// Sipariş başarılı bir şekilde tamamlandıktan sonra yapılacak işlemler burada tanımlanabilir.
+					// Örneğin, kullanıcıyı bir teşekkür sayfasına yönlendirebilirsiniz.
+				})
+				.catch(error => {
+					console.error("Sipariş sırasında bir hata oluştu:", error);
+					alert('Sipariş işlemi sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
+				});
+		}
+   openLoginModal();
+
+	});
 </script>
+
 </body>
 </html>

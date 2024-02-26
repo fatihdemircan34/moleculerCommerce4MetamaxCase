@@ -12,14 +12,16 @@ module.exports = {
 		createClient: {
 			params: {
 				name: "string",
-				email: "string"
+				email: "string",
+				password: "string" // Şifre alanını ekledik
 			},
 			async handler(ctx) {
-				const { name, email } = ctx.params;
+				const { name, email, password } = ctx.params;
 				const client = await prisma.client.create({
 					data: {
 						name,
-						email
+						email,
+						password // Şifre verisini de kaydediyoruz
 					},
 				});
 				return client;
@@ -38,13 +40,16 @@ module.exports = {
 			params: {
 				id: "number",
 				name: { type: "string", optional: true },
-				email: { type: "string", optional: true }
+				email: { type: "string", optional: true },
+				password: { type: "string", optional: true } // Şifreyi güncellemek için parametre ekledik
 			},
 			async handler(ctx) {
-				const { id, name, email } = ctx.params;
+				const { id, name, email, password } = ctx.params;
+				const updateData = { name, email };
+				if(password) updateData.password = password; // Şifre varsa güncelleme nesnesine ekliyoruz
 				const client = await prisma.client.update({
 					where: { id },
-					data: { name, email },
+					data: updateData,
 				});
 				return client;
 			},
@@ -61,6 +66,21 @@ module.exports = {
 					where: { id },
 				});
 				return { message: "Client deleted successfully." };
+			},
+		},
+
+		// Müşteriye Ait Siparişleri Sorgulama
+		getClientOrders: {
+			params: {
+				id: "number",
+			},
+			async handler(ctx) {
+				const { id } = ctx.params;
+				const clientOrders = await prisma.client.findUnique({
+					where: { id },
+					include: { orders: true }, // Müşteriye ait siparişler dahil ediliyor
+				});
+				return clientOrders;
 			},
 		},
 	},
